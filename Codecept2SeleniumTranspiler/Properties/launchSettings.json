@@ -6,7 +6,7 @@
     },
     "Codecept2SeleniumTranspiler": {
       "commandName": "Project",
-      "commandLineArgs": "-d \"C:\\Users\\cahitsertunc.selen\\Downloads\\EndToEndTesting\\KPS\\ui-tests\\bilgi_ve_destek\""
+      "commandLineArgs": "-p KPS -d \"C:\\Users\\cahitsertunc.selen\\Downloads\\EndToEndTesting\\KPS\\ui-tests\\ana_sayfa\\duyurular\""
     }
   }
 }

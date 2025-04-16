@@ -7,7 +7,7 @@ namespace Codecept2SeleniumTranspiler
     {
         private const string BeforeBlockIdentifier = "before";
 
-        public static List<SenaryoYardim> ParseHelperMethods(string jsCode, Guid projeId)
+        public static List<SenaryoYardim> ParseHelperMethods(string jsCode, string projeId)
         {
             var result = new List<SenaryoYardim>();
 
@@ -31,7 +31,7 @@ namespace Codecept2SeleniumTranspiler
             return result;
         }
 
-        public static List<Senaryo> ParseUITestMethods(string jsFileContent, Guid projeId, string fileFolder)
+        public static List<Senaryo> ParseUITestMethods(string jsFileContent, string projeId, string jsFilePath)
         {
             string beforeIcerik = string.Empty;
             var senaryolar = new List<Senaryo>();
@@ -56,7 +56,7 @@ namespace Codecept2SeleniumTranspiler
                      string.Concat(beforeIcerik, match.Groups["icerik"].Value.Trim());
 
                 var tag = match.Groups["tag"].Value.Trim();
-                var klasor = Path.Combine(fileFolder, isim);
+                var klasor = GetPath(projeId, jsFilePath);
 
                 var senaryo = new Senaryo
                 {
@@ -71,6 +71,18 @@ namespace Codecept2SeleniumTranspiler
             }
 
             return senaryolar;
+        }
+
+        private static string GetPath(string projeId, string jsFilePath)
+        {
+            var match = Regex.Match(jsFilePath, @$"{Regex.Escape(projeId)}\\(.+)");
+            if (match.Success)
+            {
+                var path = match.Groups[1].Value;
+                return path.Replace("\\", "/");
+            }
+            else
+                throw new Exception("Uygun path bulunamadı!");
         }
     }
 }

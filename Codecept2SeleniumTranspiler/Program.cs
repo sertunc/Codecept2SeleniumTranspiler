@@ -5,7 +5,7 @@ namespace Codecept2SeleniumTranspiler
 {
     internal class Program
     {
-        public static Guid ProjeId { get; set; } = Guid.NewGuid();
+        private const int ARGS_COUNT = 4;
 
         private static void Main(string[] args)
         {
@@ -18,30 +18,34 @@ namespace Codecept2SeleniumTranspiler
                 return;
             }
 
-            string command = args[0].ToLower();
+            var projectName = args[1];
+            var command = args[2].ToLower();
+            var pathOrFileName = args[3];
 
             switch (command)
             {
                 case "-f":
                 case "--file":
-                    if (args.Length < 2)
+                    if (args.Length < ARGS_COUNT)
                     {
                         Console.WriteLine("Hata: Dosya yolu belirtilmedi!");
                         ShowHelp();
                         return;
                     }
-                    ConvertUITestMethodsWithFile(args[1]);
+                    //ConvertHelperMethodsWithFile(projectName, pathOrFileName);
+                    ConvertUITestMethodsWithFile(projectName, pathOrFileName);
                     break;
 
                 case "-d":
                 case "--directory":
-                    if (args.Length < 2)
+                    if (args.Length < ARGS_COUNT)
                     {
                         Console.WriteLine("Hata: Klasör yolu belirtilmedi!");
                         ShowHelp();
                         return;
                     }
-                    ConvertUITestMethodsWithDirectory(args[1]);
+                    //ConvertHelperMethodsWithDirectory(projectName, pathOrFileName);
+                    ConvertUITestMethodsWithDirectory(projectName, pathOrFileName);
                     break;
 
                 case "-h":
@@ -50,7 +54,7 @@ namespace Codecept2SeleniumTranspiler
                     break;
 
                 default:
-                    Console.WriteLine($"Bilinmeyen komut: {command}");
+                    ConsoleHelper.WriteError($"Bilinmeyen komut: {command}");
                     ShowHelp();
                     break;
             }
@@ -59,62 +63,69 @@ namespace Codecept2SeleniumTranspiler
         private static void ShowHelp()
         {
             Console.WriteLine("\nKullanım:");
-            Console.WriteLine("  Codecept2SeleniumTranspiler -f|--file <dosya_yolu>");
-            Console.WriteLine("  Codecept2SeleniumTranspiler -d|--directory <klasör_yolu>");
+            Console.WriteLine("  Codecept2SeleniumTranspiler -p|--projectName -f|--file <dosya_yolu>");
+            Console.WriteLine("  Codecept2SeleniumTranspiler -p|--projectName -d|--directory <klasör_yolu>");
             Console.WriteLine("  Codecept2SeleniumTranspiler -h|--help");
             Console.WriteLine("\nParametreler:");
+            Console.WriteLine("  -p, --projectName Proje klasörünü belirtir");
             Console.WriteLine("  -f, --file        Tek bir JavaScript dosyasını işler");
             Console.WriteLine("  -d, --directory   Bir klasördeki tüm JavaScript dosyalarını işler");
             Console.WriteLine("  -h, --help        Bu yardım mesajını gösterir");
         }
 
-        private static void ConvertHelperMethods(string inputFolderPath)
+        private static void ConvertHelperMethodsWithDirectory(string projectName, string inputFolderPath)
         {
             var jsFiles = Directory.GetFiles(inputFolderPath);
 
             foreach (string jsFile in jsFiles)
             {
-                ConsoleHelper.WriteInfo($"İşlemdeki dosya: {jsFile}");
-
-                var senaryoYardimResult = new List<SenaryoYardim>();
-
-                var jsFileContent = FileHelper.ReadFile(jsFile);
-                var jsFileMethodList = JavaScriptStepParser.ParseHelperMethods(jsFileContent, ProjeId);
-
-                //pyhton'a çevir
-                foreach (var jsFileMethod in jsFileMethodList)
-                {
-                    ConsoleHelper.WriteInfo($"--JavaScript methodu: {jsFileMethod.Adimlari}");
-
-                    var pythonCode = JavaScriptToPythonStepConverter.Convert(jsFileMethod.Adimlari);
-
-                    ConsoleHelper.WriteInfo($"--Python methodu: {pythonCode}");
-
-                    jsFileMethod.Adimlari = pythonCode;
-                }
-
-                senaryoYardimResult.AddRange(jsFileMethodList);
-
-                // json'a yaz
-                var jsonFileName = Path.GetFileNameWithoutExtension(jsFile) + ".json";
-                var jsonFilePath = Path.Combine(inputFolderPath, jsonFileName);
-                FileHelper.WriteToJsonFile(jsonFilePath, senaryoYardimResult);
-
-                ConsoleHelper.WriteInfo($"--Json dosyası oluşturuldu: {jsonFilePath}");
+                ConvertHelperMethodsWithFile(projectName, jsFile);
             }
         }
 
-        private static void ConvertUITestMethodsWithDirectory(string inputFolderPath)
+        private static void ConvertHelperMethodsWithFile(string projectName, string jsFilePath)
+        {
+            ConsoleHelper.WriteInfo($"İşlemdeki dosya: {jsFilePath}");
+
+            var senaryoYardimResult = new List<SenaryoYardim>();
+
+            var jsFileFolderPath = Path.GetDirectoryName(jsFilePath);
+            var jsFileContent = FileHelper.ReadFile(jsFilePath);
+            var jsFileMethodList = JavaScriptStepParser.ParseHelperMethods(jsFileContent, projectName);
+
+            //pyhton'a çevir
+            foreach (var jsFileMethod in jsFileMethodList)
+            {
+                ConsoleHelper.WriteInfo($"--JavaScript methodu: {jsFileMethod.Adimlari}");
+
+                var pythonCode = JavaScriptToPythonStepConverter.Convert(jsFileMethod.Adimlari);
+
+                ConsoleHelper.WriteInfo($"--Python methodu: {pythonCode}");
+
+                jsFileMethod.Adimlari = pythonCode;
+            }
+
+            senaryoYardimResult.AddRange(jsFileMethodList);
+
+            // json'a yaz
+            var jsonFileName = Path.GetFileNameWithoutExtension(jsFilePath) + ".json";
+            var jsonFilePath = Path.Combine(jsFileFolderPath, jsonFileName);
+            FileHelper.WriteToJsonFile(jsonFilePath, senaryoYardimResult);
+
+            ConsoleHelper.WriteInfo($"--Json dosyası oluşturuldu: {jsonFilePath}");
+        }
+
+        private static void ConvertUITestMethodsWithDirectory(string projectName, string inputFolderPath)
         {
             var jsFiles = Directory.GetFiles(inputFolderPath);
 
             foreach (string jsFile in jsFiles)
             {
-                ConvertUITestMethodsWithFile(jsFile);
+                ConvertUITestMethodsWithFile(projectName, jsFile);
             }
         }
 
-        private static void ConvertUITestMethodsWithFile(string jsFilePath)
+        private static void ConvertUITestMethodsWithFile(string projectName, string jsFilePath)
         {
             ConsoleHelper.WriteInfo($"İşlemdeki dosya: {jsFilePath}");
 
@@ -122,7 +133,7 @@ namespace Codecept2SeleniumTranspiler
 
             var jsFileFolderPath = Path.GetDirectoryName(jsFilePath);
             var jsFileContent = FileHelper.ReadFile(jsFilePath);
-            var jsFileMethodList = JavaScriptStepParser.ParseUITestMethods(jsFileContent, ProjeId, jsFileFolderPath);
+            var jsFileMethodList = JavaScriptStepParser.ParseUITestMethods(jsFileContent, projectName, jsFilePath);
 
             //pyhton'a çevir
             foreach (var jsFileMethod in jsFileMethodList)

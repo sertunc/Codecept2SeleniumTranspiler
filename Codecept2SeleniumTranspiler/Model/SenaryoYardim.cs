@@ -4,6 +4,6 @@
     {
         public string Isim { get; set; }
         public string Adimlari { get; set; }
-        public Guid ProjeId { get; set; }
+        public string ProjeId { get; set; }
     }
 }

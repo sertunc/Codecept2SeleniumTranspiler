@@ -6,6 +6,6 @@
         public string ScriptId { get; set; }
         public string Klasor { get; set; }
         public string Adimlari { get; set; }
-        public Guid ProjeId { get; set; }
+        public string ProjeId { get; set; }
     }
 }
