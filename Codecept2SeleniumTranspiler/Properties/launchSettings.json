@@ -1,0 +1,12 @@
+{
+  "profiles": {
+    "WSL": {
+      "commandName": "WSL2",
+      "distributionName": ""
+    },
+    "Codecept2SeleniumTranspiler": {
+      "commandName": "Project",
+      "commandLineArgs": "-d \"C:\\Users\\cahitsertunc.selen\\Downloads\\EndToEndTesting\\KPS\\ui-tests\\bilgi_ve_destek\""
+    }
+  }
+}

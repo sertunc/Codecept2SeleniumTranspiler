@@ -1,0 +1,76 @@
+﻿using System.Text.RegularExpressions;
+using Codecept2SeleniumTranspiler.Model;
+
+namespace Codecept2SeleniumTranspiler
+{
+    public static class JavaScriptStepParser
+    {
+        private const string BeforeBlockIdentifier = "before";
+
+        public static List<SenaryoYardim> ParseHelperMethods(string jsCode, Guid projeId)
+        {
+            var result = new List<SenaryoYardim>();
+
+            var methodRegex = new Regex(@"async\s+(\w+)\s*\([^)]*\)\s*{([^}]*)}", RegexOptions.Singleline);
+
+            var matches = methodRegex.Matches(jsCode);
+
+            foreach (Match match in matches)
+            {
+                var isim = match.Groups[1].Value.Trim();
+                var icerik = match.Groups[2].Value.Trim();
+
+                result.Add(new SenaryoYardim
+                {
+                    Isim = isim,
+                    Adimlari = icerik,
+                    ProjeId = projeId
+                });
+            }
+
+            return result;
+        }
+
+        public static List<Senaryo> ParseUITestMethods(string jsFileContent, Guid projeId, string fileFolder)
+        {
+            string beforeIcerik = string.Empty;
+            var senaryolar = new List<Senaryo>();
+
+            var beforeRegex = new Regex(@"Before\s*\(\s*async\s*\([^)]+\)\s*=>\s*{([^}]*)}\s*\)\s*;", RegexOptions.Singleline);
+            var scenarioPattern = @"Scenario\(['""](?<isim>.*?)['""],\s*async\s*\(\{[^)]*\}\)\s*=>\s*\{\s*(?<icerik>.*?)\s*\}\)\.tag\(['""](?<tag>.*?)['""]\);";
+            var scenarioMatches = Regex.Matches(jsFileContent, scenarioPattern, RegexOptions.Singleline);
+
+            // Before bloğu varsa, onu da ayrı bir senaryo gibi ele alalım
+            var beforeMatch = beforeRegex.Match(jsFileContent);
+            if (beforeMatch.Success)
+            {
+                beforeIcerik = beforeMatch.Groups[1].Value.Trim();
+            }
+
+            foreach (Match match in scenarioMatches)
+            {
+                var isim = match.Groups["isim"].Value.Trim();
+
+                var icerik = string.IsNullOrEmpty(beforeIcerik) ?
+                     match.Groups["icerik"].Value.Trim() :
+                     string.Concat(beforeIcerik, match.Groups["icerik"].Value.Trim());
+
+                var tag = match.Groups["tag"].Value.Trim();
+                var klasor = Path.Combine(fileFolder, isim);
+
+                var senaryo = new Senaryo
+                {
+                    Isim = isim,
+                    Adimlari = icerik,
+                    ScriptId = tag,
+                    Klasor = klasor,
+                    ProjeId = projeId,
+                };
+
+                senaryolar.Add(senaryo);
+            }
+
+            return senaryolar;
+        }
+    }
+}
