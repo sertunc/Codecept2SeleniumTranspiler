@@ -34,10 +34,12 @@ namespace Codecept2SeleniumTranspiler
             return result;
         }
 
-        public static List<Senaryo> ParseUITestMethods(string jsFileContent, string projeId, string jsFilePath)
+        public static List<Senaryo> ParseUITestMethods(string projeId, string jsFilePath)
         {
             string beforeIcerik = string.Empty;
             var senaryolar = new List<Senaryo>();
+
+            var jsFileContent = FileHelper.ReadFile(jsFilePath);
 
             var beforeRegex = new Regex(@"Before\s*\(\s*async\s*\([^)]+\)\s*=>\s*{([^}]*)}\s*\)\s*;", RegexOptions.Singleline);
             var scenarioPattern = @"Scenario\(['""](?<isim>.*?)['""],\s*async\s*\(\{[^)]*\}\)\s*=>\s*\{\s*(?<icerik>.*?)\s*\}\)\.tag\(['""](?<tag>.*?)['""]\);";
@@ -79,13 +81,16 @@ namespace Codecept2SeleniumTranspiler
         private static string GetPath(string projeId, string jsFilePath)
         {
             var match = Regex.Match(jsFilePath, @$"{Regex.Escape(projeId)}\\(.+)");
-            if (match.Success)
-            {
-                var path = match.Groups[1].Value;
-                return path.Replace("\\", "/");
-            }
-            else
+            if (!match.Success)
                 throw new Exception("Uygun path bulunamadı!");
+
+            var relativePath = match.Groups[1].Value;
+            var withoutExtension = Path.Combine(
+                Path.GetDirectoryName(relativePath) ?? string.Empty,
+                Path.GetFileNameWithoutExtension(relativePath)
+            );
+
+            return withoutExtension.Replace("\\", "/");
         }
     }
 }

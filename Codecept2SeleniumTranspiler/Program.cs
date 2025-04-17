@@ -127,8 +127,8 @@ namespace Codecept2SeleniumTranspiler
             var senaryoResult = new List<Senaryo>();
 
             var jsFileFolderPath = Path.GetDirectoryName(jsFilePath);
-            var jsFileContent = FileHelper.ReadFile(jsFilePath);
-            var jsFileMethodList = JavaScriptStepParser.ParseUITestMethods(jsFileContent, projectName, jsFilePath);
+
+            var jsFileMethodList = JavaScriptStepParser.ParseUITestMethods(projectName, jsFilePath);
 
             //pyhton'a çevir
             foreach (var jsFileMethod in jsFileMethodList)
