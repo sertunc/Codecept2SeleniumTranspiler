@@ -1,19 +1,21 @@
 ﻿using System.Text.RegularExpressions;
+using Codecept2SeleniumTranspiler.Helper;
 using Codecept2SeleniumTranspiler.Model;
 
 namespace Codecept2SeleniumTranspiler
 {
     public static class JavaScriptStepParser
     {
-        private const string BeforeBlockIdentifier = "before";
-
-        public static List<SenaryoYardim> ParseHelperMethods(string jsCode, string projeId)
+        public static List<SenaryoYardim> ParseHelperMethods(string projeId, string jsFilePath)
         {
             var result = new List<SenaryoYardim>();
 
+            var jsFileName = Path.GetFileNameWithoutExtension(jsFilePath);
+            var jsFileContent = FileHelper.ReadFile(jsFilePath);
+
             var methodRegex = new Regex(@"async\s+(\w+)\s*\([^)]*\)\s*{([^}]*)}", RegexOptions.Singleline);
 
-            var matches = methodRegex.Matches(jsCode);
+            var matches = methodRegex.Matches(jsFileContent);
 
             foreach (Match match in matches)
             {
@@ -24,6 +26,7 @@ namespace Codecept2SeleniumTranspiler
                 {
                     Isim = isim,
                     Adimlari = icerik,
+                    Klasor = jsFileName,
                     ProjeId = projeId
                 });
             }

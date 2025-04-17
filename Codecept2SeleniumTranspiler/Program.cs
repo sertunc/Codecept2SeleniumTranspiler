@@ -9,11 +9,18 @@ namespace Codecept2SeleniumTranspiler
 
         private static void Main(string[] args)
         {
-            Console.WriteLine("Codecept2SeleniumTranspiler - Konsol Uygulaması");
-            Console.WriteLine("================================================");
+            ConsoleHelper.WriteSuccess("Codecept2SeleniumTranspiler - Konsol Uygulaması");
+            ConsoleHelper.WriteSuccess("================================================\n");
 
             if (args.Length == 0)
             {
+                ShowHelp();
+                return;
+            }
+
+            if (args.Length < ARGS_COUNT)
+            {
+                Console.WriteLine("Hata: Dosya veya klasör yolu belirtilmedi!");
                 ShowHelp();
                 return;
             }
@@ -26,24 +33,12 @@ namespace Codecept2SeleniumTranspiler
             {
                 case "-f":
                 case "--file":
-                    if (args.Length < ARGS_COUNT)
-                    {
-                        Console.WriteLine("Hata: Dosya yolu belirtilmedi!");
-                        ShowHelp();
-                        return;
-                    }
                     //ConvertHelperMethodsWithFile(projectName, pathOrFileName);
                     ConvertUITestMethodsWithFile(projectName, pathOrFileName);
                     break;
 
                 case "-d":
                 case "--directory":
-                    if (args.Length < ARGS_COUNT)
-                    {
-                        Console.WriteLine("Hata: Klasör yolu belirtilmedi!");
-                        ShowHelp();
-                        return;
-                    }
                     //ConvertHelperMethodsWithDirectory(projectName, pathOrFileName);
                     ConvertUITestMethodsWithDirectory(projectName, pathOrFileName);
                     break;
@@ -62,15 +57,15 @@ namespace Codecept2SeleniumTranspiler
 
         private static void ShowHelp()
         {
-            Console.WriteLine("\nKullanım:");
-            Console.WriteLine("  Codecept2SeleniumTranspiler -p|--projectName -f|--file <dosya_yolu>");
-            Console.WriteLine("  Codecept2SeleniumTranspiler -p|--projectName -d|--directory <klasör_yolu>");
-            Console.WriteLine("  Codecept2SeleniumTranspiler -h|--help");
-            Console.WriteLine("\nParametreler:");
-            Console.WriteLine("  -p, --projectName Proje klasörünü belirtir");
-            Console.WriteLine("  -f, --file        Tek bir JavaScript dosyasını işler");
-            Console.WriteLine("  -d, --directory   Bir klasördeki tüm JavaScript dosyalarını işler");
-            Console.WriteLine("  -h, --help        Bu yardım mesajını gösterir");
+            ConsoleHelper.WriteWarning("\nKullanım:");
+            ConsoleHelper.WriteWarning("  Codecept2SeleniumTranspiler -p|--projectName -f|--file <dosya_yolu>");
+            ConsoleHelper.WriteWarning("  Codecept2SeleniumTranspiler -p|--projectName -d|--directory <klasör_yolu>");
+            ConsoleHelper.WriteWarning("  Codecept2SeleniumTranspiler -h|--help");
+            ConsoleHelper.WriteWarning("\nParametreler:");
+            ConsoleHelper.WriteWarning("  -p, --projectName Proje klasörünü belirtir");
+            ConsoleHelper.WriteWarning("  -f, --file        Tek bir JavaScript dosyasını işler");
+            ConsoleHelper.WriteWarning("  -d, --directory   Bir klasördeki tüm JavaScript dosyalarını işler");
+            ConsoleHelper.WriteWarning("  -h, --help        Bu yardım mesajını gösterir");
         }
 
         private static void ConvertHelperMethodsWithDirectory(string projectName, string inputFolderPath)
@@ -90,8 +85,8 @@ namespace Codecept2SeleniumTranspiler
             var senaryoYardimResult = new List<SenaryoYardim>();
 
             var jsFileFolderPath = Path.GetDirectoryName(jsFilePath);
-            var jsFileContent = FileHelper.ReadFile(jsFilePath);
-            var jsFileMethodList = JavaScriptStepParser.ParseHelperMethods(jsFileContent, projectName);
+
+            var jsFileMethodList = JavaScriptStepParser.ParseHelperMethods(projectName, jsFilePath);
 
             //pyhton'a çevir
             foreach (var jsFileMethod in jsFileMethodList)
@@ -108,7 +103,7 @@ namespace Codecept2SeleniumTranspiler
             senaryoYardimResult.AddRange(jsFileMethodList);
 
             // json'a yaz
-            var jsonFileName = Path.GetFileNameWithoutExtension(jsFilePath) + ".json";
+            var jsonFileName = string.Concat(Path.GetFileNameWithoutExtension(jsFilePath), ".json");
             var jsonFilePath = Path.Combine(jsFileFolderPath, jsonFileName);
             FileHelper.WriteToJsonFile(jsonFilePath, senaryoYardimResult);
 
