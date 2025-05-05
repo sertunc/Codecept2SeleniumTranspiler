@@ -1,4 +1,5 @@
-﻿using System.Text.RegularExpressions;
+﻿using System.Globalization;
+using System.Text.RegularExpressions;
 using Codecept2SeleniumTranspiler.Helper;
 using Codecept2SeleniumTranspiler.Model;
 
@@ -65,10 +66,10 @@ namespace Codecept2SeleniumTranspiler
 
                 var senaryo = new Senaryo
                 {
-                    Isim = isim,
+                    Isim = Clean(isim),
                     Adimlari = icerik,
                     ScriptId = tag,
-                    Klasor = klasor,
+                    Klasor = CleanUITestText(klasor),
                     ProjeId = projeId,
                 };
 
@@ -91,6 +92,32 @@ namespace Codecept2SeleniumTranspiler
             );
 
             return withoutExtension.Replace("\\", "/");
+        }
+
+        private static string Clean(string value)
+        {
+            // Parantezleri boşlukla değiştir
+            string temizlenmis = Regex.Replace(value, "[()]", " ");
+
+            // Alt çizgileri boşlukla değiştir
+            temizlenmis = temizlenmis.Replace("_", " ");
+
+            // Fazla boşlukları tek boşluğa indir
+            temizlenmis = Regex.Replace(temizlenmis, @"\s+", " ").Trim();
+
+            // Her kelimenin baş harfini büyüt
+            TextInfo ti = CultureInfo.CurrentCulture.TextInfo;
+            string properCase = ti.ToTitleCase(temizlenmis.ToLower());
+
+            return properCase;
+        }
+
+        private static string CleanUITestText(string value)
+        {
+            if (value.Contains("_ui_test"))
+                return value.Replace("_ui_test", "");
+            else
+                return value;
         }
     }
 }

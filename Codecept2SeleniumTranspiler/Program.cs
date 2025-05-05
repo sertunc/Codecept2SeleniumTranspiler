@@ -112,21 +112,26 @@ namespace Codecept2SeleniumTranspiler
 
         private static void ConvertUITestMethodsWithDirectory(string projectName, string inputFolderPath)
         {
-            var jsFiles = Directory.GetFiles(inputFolderPath);
+            var senaryoResult = new List<Senaryo>();
+
+            var jsFiles = Directory.GetFiles(inputFolderPath, "*.js", SearchOption.AllDirectories);
 
             foreach (string jsFile in jsFiles)
             {
-                ConvertUITestMethodsWithFile(projectName, jsFile);
+                var result = ConvertUITestMethodsWithFile(projectName, jsFile);
+                senaryoResult.AddRange(result);
             }
+
+            FileHelper.WriteToJsonFile(@"C:\yedek_sertunc_selen\Downloads\EndToEndTesting\KPS\KPS_UI_Testleri.json", senaryoResult);
         }
 
-        private static void ConvertUITestMethodsWithFile(string projectName, string jsFilePath)
+        private static List<Senaryo> ConvertUITestMethodsWithFile(string projectName, string jsFilePath)
         {
             ConsoleHelper.WriteInfo($"İşlemdeki dosya: {jsFilePath}");
 
             var senaryoResult = new List<Senaryo>();
 
-            var jsFileFolderPath = Path.GetDirectoryName(jsFilePath);
+            //var jsFileFolderPath = Path.GetDirectoryName(jsFilePath);
 
             var jsFileMethodList = JavaScriptStepParser.ParseUITestMethods(projectName, jsFilePath);
 
@@ -142,13 +147,16 @@ namespace Codecept2SeleniumTranspiler
                 ConsoleHelper.WriteInfo("--Python method içeriği:\n");
                 ConsoleHelper.WriteInfo(adimlariPythonCode);
 
+                senaryoResult.Add(jsFileMethod);
                 // json'a yaz
-                var jsonFileName = string.Concat(jsFileMethod.Isim, ".json");
-                var jsonFilePath = Path.Combine(jsFileFolderPath, jsonFileName);
-                FileHelper.WriteToJsonFile(jsonFilePath, jsFileMethod);
+                //var jsonFileName = string.Concat(jsFileMethod.Isim, ".json");
+                //var jsonFilePath = Path.Combine(jsFileFolderPath, jsonFileName);
+                //FileHelper.WriteToJsonFile(jsonFilePath, jsFileMethod);
 
-                ConsoleHelper.WriteSuccess($"--Json dosyası oluşturuldu: {jsonFilePath}\n");
+                //ConsoleHelper.WriteSuccess($"--Json dosyası oluşturuldu: {jsonFilePath}\n");
             }
+
+            return senaryoResult;
         }
     }
 }
