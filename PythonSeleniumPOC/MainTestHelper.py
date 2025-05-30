@@ -17,7 +17,7 @@ from selenium.webdriver.common.action_chains import ActionChains
 
 # OUTPUT_FOLDER = "D:\\resimler\\"
 # OUTPUT_FOLDER = "/scripts/";
-OUTPUT_FOLDER = "C:/yedek_sertunc_selen/Downloads/test/scripts/"
+OUTPUT_FOLDER = "C:/yedek_sertunc_selen/source/repos/Codecept2SeleniumTranspiler/PythonSeleniumPOC/scripts/"
 
 class MainTestHelper:
     def __init__(self):

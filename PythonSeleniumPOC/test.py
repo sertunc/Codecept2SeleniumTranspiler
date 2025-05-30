@@ -1,5 +1,5 @@
 from MainTestHelper import MainTestHelper
-from Random import Random
+from Random import Random # from Random(bütük harf yazılmasına dikkat edilmeli aksi halde python random sınıfın algılıyor.
 
 class SayfadaVarMiTest(MainTestHelper):
     def TestTanimi(self):
