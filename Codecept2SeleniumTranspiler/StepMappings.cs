@@ -9,10 +9,15 @@
             { "see", "SayfadaVarMi" },
             { "wait", "Bekle" },
             { "waitToHide", "GizlenmesiniBekle" },
-            { "waitForVisible", "GorunmesiniBekle" },
+            { "waitForVisible", "GorunmesiniBekle" },            
             { "click", "Tikla" },
             { "fillField", "Yaz" },
             { "checkOption", "Tikla" },
+
+            { "moveCursorTo", "ImleciGotur" },
+            { "setVatanComboBox", "Tikla" },
+            { "selectVatanTab", "Tikla" },
+            { "pressKey", "Yaz" },
         };
     }
 }
