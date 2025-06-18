@@ -10,6 +10,9 @@ class RandomName:
 
     def findName(self):
         return self.firstName()
+    
+    def jobTitle(self):
+        return random.choice(self._job_title)
 
     _first_names = [
         "Adelya",
@@ -1352,8 +1355,63 @@ class RandomName:
         "Öztonga",
         "Öztuna",
     ]
+    
+    _job_title = [
+        "Mimar",
+        "Mühendis",
+        "Doktor",
+        "Öğretmen",
+        "Yazılımcı",
+        "Avukat",
+        "Hemşire",
+    ]
 
+class RandomCompany:
+    def companyName(self):
+        return random.choice(self._companies)
+
+    _companies = [
+        "Tech Innovations Ltd.",
+        "Green Energy Solutions",
+        "Global Trade Corp.",
+        "Smart Home Systems",
+        "Digital Marketing Agency",
+        "Health and Wellness Inc.",
+        "Eco-Friendly Products Co.",
+        "Advanced Robotics Ltd.",
+        "Urban Development Group",
+        "Creative Design Studio"
+    ]
+
+class RandomPhone:
+    def phoneNumber(self):
+        return random.choice(self._phone_numbers)
+
+    _phone_numbers = [
+        "05335454322"
+    ]
+
+class RandomInternet:
+    def email(self):
+        return random.choice(self._email_adresses)
+    
+    def ip(self):
+        return random.choice(self._ips)
+    
+    _email_adresses = [
+        "harmon27@gmail.com",
+        "helen.pagac@gmail.com"
+    ]
+
+    _ips = [
+        "72.228.203.173",
+        "255.127.60.128",
+        "191.37.5.118"
+    ]
 
 class Random:
     def __init__(self):
         self.name = RandomName()
+        self.company = RandomCompany()
+        self.phone = RandomPhone()
+        self.internet = RandomInternet()

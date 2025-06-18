@@ -29,6 +29,7 @@ class MainTestHelper:
         self.order = 1
 
         self.driver = webdriver.Chrome(options=chrome_options)
+        self.driver.set_window_size(1000, 600)
 
     def TesteBasla(self):
         try:
