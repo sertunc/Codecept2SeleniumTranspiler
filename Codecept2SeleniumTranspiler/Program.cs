@@ -70,21 +70,26 @@ namespace Codecept2SeleniumTranspiler
 
         private static void ConvertHelperMethodsWithDirectory(string projectName, string inputFolderPath)
         {
+            var senaryoYardimResult = new List<SenaryoYardim>();
+
             var jsFiles = Directory.GetFiles(inputFolderPath);
 
             foreach (string jsFile in jsFiles)
             {
-                ConvertHelperMethodsWithFile(projectName, jsFile);
+                var result = ConvertHelperMethodsWithFile(projectName, jsFile);
+                senaryoYardimResult.AddRange(result);
             }
+
+            FileHelper.WriteToJsonFile(@"C:\yedek_sertunc_selen\Downloads\EndToEndTesting\KimlikIzi\KimlikIzi_UI_Testleri_Helper_Son.json", senaryoYardimResult);
         }
 
-        private static void ConvertHelperMethodsWithFile(string projectName, string jsFilePath)
+        private static List<SenaryoYardim> ConvertHelperMethodsWithFile(string projectName, string jsFilePath)
         {
             ConsoleHelper.WriteInfo($"İşlemdeki dosya: {jsFilePath}");
 
             var senaryoYardimResult = new List<SenaryoYardim>();
 
-            var jsFileFolderPath = Path.GetDirectoryName(jsFilePath);
+            //var jsFileFolderPath = Path.GetDirectoryName(jsFilePath);
 
             var jsFileMethodList = JavaScriptStepParser.ParseHelperMethods(projectName, jsFilePath);
 
@@ -98,16 +103,20 @@ namespace Codecept2SeleniumTranspiler
                 ConsoleHelper.WriteInfo($"--Python methodu: {pythonCode}");
 
                 jsFileMethod.Adimlari = pythonCode;
+
+                ConsoleHelper.WriteInfo("--Python method içeriği:\n");
+                ConsoleHelper.WriteInfo(pythonCode);
+
+                senaryoYardimResult.Add(jsFileMethod);
+                // json'a yaz
+                //var jsonFileName = string.Concat(Path.GetFileNameWithoutExtension(jsFilePath), ".json");
+                //var jsonFilePath = Path.Combine(jsFileFolderPath, jsonFileName);
+                //FileHelper.WriteToJsonFile(jsonFilePath, senaryoYardimResult);
+
+                //ConsoleHelper.WriteInfo($"--Json dosyası oluşturuldu: {jsonFilePath}");
             }
 
-            senaryoYardimResult.AddRange(jsFileMethodList);
-
-            // json'a yaz
-            var jsonFileName = string.Concat(Path.GetFileNameWithoutExtension(jsFilePath), ".json");
-            var jsonFilePath = Path.Combine(jsFileFolderPath, jsonFileName);
-            FileHelper.WriteToJsonFile(jsonFilePath, senaryoYardimResult);
-
-            ConsoleHelper.WriteInfo($"--Json dosyası oluşturuldu: {jsonFilePath}");
+            return senaryoYardimResult;
         }
 
         private static void ConvertUITestMethodsWithDirectory(string projectName, string inputFolderPath)
@@ -122,7 +131,7 @@ namespace Codecept2SeleniumTranspiler
                 senaryoResult.AddRange(result);
             }
 
-            FileHelper.WriteToJsonFile(@"C:\yedek_sertunc_selen\Downloads\EndToEndTesting\KPS\KPS_UI_Testleri.json", senaryoResult);
+            FileHelper.WriteToJsonFile(@"C:\yedek_sertunc_selen\Downloads\EndToEndTesting\KimlikIzi\KimlikIzi_UI_Testleri_Son.json", senaryoResult);
         }
 
         private static List<Senaryo> ConvertUITestMethodsWithFile(string projectName, string jsFilePath)

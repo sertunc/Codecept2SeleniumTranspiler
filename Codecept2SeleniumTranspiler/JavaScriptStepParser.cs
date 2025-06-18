@@ -1,7 +1,7 @@
-﻿using System.Globalization;
-using System.Text.RegularExpressions;
-using Codecept2SeleniumTranspiler.Helper;
+﻿using Codecept2SeleniumTranspiler.Helper;
 using Codecept2SeleniumTranspiler.Model;
+using System.Globalization;
+using System.Text.RegularExpressions;
 
 namespace Codecept2SeleniumTranspiler
 {
@@ -25,9 +25,9 @@ namespace Codecept2SeleniumTranspiler
 
                 result.Add(new SenaryoYardim
                 {
-                    Isim = isim,
+                    Isim = Clean(isim),
                     Adimlari = icerik,
-                    Klasor = jsFileName,
+                    Klasor = Clean(jsFileName),
                     ProjeId = projeId
                 });
             }
@@ -42,11 +42,22 @@ namespace Codecept2SeleniumTranspiler
 
             var jsFileContent = FileHelper.ReadFile(jsFilePath);
 
+            // Eğer dosya tamamen yorumsa, direkt geç
+            if (Regex.IsMatch(jsFileContent, @"^\s*/\*[\s\S]*\*/\s*$"))
+                return senaryolar;
+
+            // Yorum bloklarının konumlarını bul (başlangıç ve bitiş indeksleri)
+            var commentBlockMatches = Regex.Matches(jsFileContent, @"/\*[\s\S]*?\*/", RegexOptions.Singleline);
+            var commentSpans = commentBlockMatches
+                .Cast<Match>()
+                .Select(m => (start: m.Index, end: m.Index + m.Length))
+                .ToList();
+
             var beforeRegex = new Regex(@"Before\s*\(\s*async\s*\([^)]+\)\s*=>\s*{([^}]*)}\s*\)\s*;", RegexOptions.Singleline);
             var scenarioPattern = @"Scenario\(['""](?<isim>.*?)['""],\s*async\s*\(\{[^)]*\}\)\s*=>\s*\{\s*(?<icerik>.*?)\s*\}\)\.tag\(['""](?<tag>.*?)['""]\);";
             var scenarioMatches = Regex.Matches(jsFileContent, scenarioPattern, RegexOptions.Singleline);
 
-            // Before bloğu varsa, onu da ayrı bir senaryo gibi ele alalım
+            // Before bloğu varsa, onu ekle
             var beforeMatch = beforeRegex.Match(jsFileContent);
             if (beforeMatch.Success)
             {
@@ -55,6 +66,13 @@ namespace Codecept2SeleniumTranspiler
 
             foreach (Match match in scenarioMatches)
             {
+                int scenarioStartIndex = match.Index;
+
+                // Bu senaryo yorum bloklarından birinin içindeyse atla
+                bool isInsideComment = commentSpans.Any(span => scenarioStartIndex >= span.start && scenarioStartIndex < span.end);
+                if (isInsideComment)
+                    continue;
+
                 var isim = match.Groups["isim"].Value.Trim();
 
                 var icerik = string.IsNullOrEmpty(beforeIcerik) ?
@@ -69,7 +87,7 @@ namespace Codecept2SeleniumTranspiler
                     Isim = Clean(isim),
                     Adimlari = icerik,
                     ScriptId = tag,
-                    Klasor = CleanUITestText(klasor),
+                    Klasor = Clean(CleanUITestText(klasor)),
                     ProjeId = projeId,
                 };
 
@@ -78,6 +96,7 @@ namespace Codecept2SeleniumTranspiler
 
             return senaryolar;
         }
+
 
         private static string GetPath(string projeId, string jsFilePath)
         {

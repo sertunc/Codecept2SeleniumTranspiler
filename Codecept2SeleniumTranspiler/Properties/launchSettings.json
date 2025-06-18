@@ -5,8 +5,8 @@
       "distributionName": ""
     },
     "Codecept2SeleniumTranspiler": {
-        "commandName": "Project",
-        "commandLineArgs": "-p KPS -d \"C:\\yedek_sertunc_selen\\Downloads\\EndToEndTesting\\KPS\\ui-tests\""
+      "commandName": "Project",
+      "commandLineArgs": "-p KimlikIzi -d \"C:\\yedek_sertunc_selen\\Downloads\\EndToEndTesting\\KimlikIzi\\ui-tests\""
     }
   }
 }
