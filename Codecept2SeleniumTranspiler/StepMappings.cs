@@ -6,7 +6,7 @@
         {
             { "I", "self" },
             { "amOnPage", "Git" },
-            { "see", "SayfadaVarMi" },
+            { "see", "SayfadaOlmali" },
             { "dontSee", "SayfadaYokMu" },
             { "wait", "Bekle" },
             { "waitToHide", "GizlenmesiniBekle" },

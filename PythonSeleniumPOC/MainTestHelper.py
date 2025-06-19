@@ -72,7 +72,7 @@ class MainTestHelper:
         self.BeforeAction("{sure} saniye bekle".format(sure = sure))
 
         try:
-            return WebDriverWait(self.driver, timeout=sure, poll_frequency=1).until(lambda x: False);
+            return WebDriverWait(self.driver, timeout=sure, poll_frequency=1).until(lambda x: False)
         except:
             pass
 
@@ -84,7 +84,7 @@ class MainTestHelper:
         
         return WebDriverWait(self.driver, sure).until(lambda x: self.findElementByDriver(x, path))
     
-    def SayfadaVarMi(self, beklenenMetin: str, path: str = "", aciklama = ""):        
+    def SayfadaOlmali(self, beklenenMetin: str, path: str = "", aciklama = ""):        
         if len(aciklama) == 0:
             self.BeforeAction("Sayfada '{beklenenMetin}' metni aranıyor.".format(beklenenMetin=beklenenMetin))
         else:
@@ -191,7 +191,7 @@ class MainTestHelper:
 
 
     def findSingleControl(self, path: str, aciklama: str):
-       return self.findSingleControlByDriver(self.driver, path, aciklama);
+       return self.findSingleControlByDriver(self.driver, path, aciklama)
 
     def findSingleControlByDriver(self, givenDriver: webdriver.Chrome, path: str, aciklama: str):
         if path.startswith("#"):

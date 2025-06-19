@@ -1,206 +1,49 @@
-import { useState } from "react";
-import "./App.css";
+import { Routes, Route, useNavigate } from "react-router-dom";
+import SayfadaOlmaliTest from "./pages/SayfadaOlmaliTest";
+import GizlenmesiniBekleTest from "./pages/GizlenmesiniBekleTest";
+import GorunmesiniBekleTest from "./pages/GorunmesiniBekleTest";
+import CheckOptionTest from "./pages/CheckOptionTest";
+import AcilirKutudaSecTest from "./pages/AcilirKutudaSecTest";
+import ImleciUzerineGetirTest from "./pages/ImleciUzerineGetirTest";
 
-function App() {
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const [message, setMessage] = useState("");
-  const [gizlenmesiniBekle, setGizlenmesiniBekle] = useState(true);
-  const [gorunmesiniBekle, setGorunmesiniBekle] = useState(false);
-  const [checked, setChecked] = useState(false);
-  const [selectedOption, setSelectedOption] = useState("");
-  const [hoverMessage, setHoverMessage] = useState(false);
-  const handleMouseEnter = () => setHoverMessage(true);
-  const handleMouseLeave = () => setHoverMessage(false);
+function HomePage() {
+  const navigate = useNavigate();
 
-  const handleLogin = () => {
-    if (username === "sertunc" && password === "123") {
-      setMessage("Giriş Başarılı");
-    } else {
-      setMessage("Hatalı Giriş");
+  const handleClick = () => {
+    const buttonId = document.activeElement.id;
+    if (buttonId === "") {
+      alert("button id bulunamadı.");
+      return;
     }
-  };
 
-  const handleGizlenmesiniBekle = () => {
-    setTimeout(() => {
-      setGizlenmesiniBekle(false);
-    }, 2000); // 2 saniye sonra mesaj görünür hale gelir
-  };
-
-  const handleGorunmesiniBekle = () => {
-    setTimeout(() => {
-      setGorunmesiniBekle(true);
-    }, 2000); // 2 saniye sonra mesaj görünür hale gelir
-  };
-
-  const handleCheckboxChange = () => {
-    setChecked(!checked);
-  };
-
-  const handleSelectChange = (e) => {
-    setSelectedOption(e.target.value);
+    navigate(`/${buttonId}`);
   };
 
   return (
     <>
-      <div
-        style={{
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          marginTop: "50px",
-        }}
-      >
-        <h1>Giriş Yap</h1>
-        <input
-          id="username"
-          type="text"
-          placeholder="Kullanıcı Adı"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
-          style={{ marginBottom: "10px", padding: "8px", width: "200px" }}
-        />
-        <input
-          id="password"
-          type="password"
-          placeholder="Parola"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          style={{ marginBottom: "10px", padding: "8px", width: "200px" }}
-        />
-        <button id="btnLogin" onClick={handleLogin} style={{ padding: "8px 16px" }}>
-          Giriş
-        </button>
-        <label
-          id="lblResult"
-          style={{
-            marginTop: "20px",
-            fontSize: "16px",
-            color: message === "Giriş Başarılı" ? "green" : "red",
-          }}
-        >
-          {message}
-        </label>
-      </div>
-      <div
-        style={{
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          marginTop: "50px",
-        }}
-      >
-        <h1>Gizlenmesini Bekle Test</h1>
-        <button
-          id="btnGizlenmesiniBekle"
-          onClick={handleGizlenmesiniBekle}
-          style={{ padding: "8px 16px" }}
-        >
-          Mesajı Gizle
-        </button>
-        {gizlenmesiniBekle && (
-          <div
-            id="divGizlenmesiniBekle"
-            style={{ marginTop: "20px", fontSize: "16px", color: "green" }}
-          >
-            Bu bir test mesajıdır.
-          </div>
-        )}
-      </div>
-      <div
-        style={{
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          marginTop: "50px",
-        }}
-      >
-        <h1>Görünmesini Bekle Test</h1>
-        <button
-          id="btnGorunmesiniBekle"
-          onClick={handleGorunmesiniBekle}
-          style={{ padding: "8px 16px" }}
-        >
-          Mesajı Göster
-        </button>
-        {gorunmesiniBekle && (
-          <div
-            id="divGorunmesiniBekle"
-            style={{ marginTop: "20px", fontSize: "16px", color: "green" }}
-          >
-            Bu bir test mesajıdır.
-          </div>
-        )}
-      </div>
-
-      <div
-        style={{
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          marginTop: "50px",
-        }}
-      >
-        <label>
-          <input id="checkbox1" type="checkbox" checked={checked} onChange={handleCheckboxChange} />
-          Kullanım koşullarını kabul ediyorum
-        </label>
-      </div>
-      <div
-        style={{
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          marginTop: "50px",
-        }}
-      >
-        <h1>Seçim Yap</h1>
-        <select
-          id="dropdown"
-          value={selectedOption}
-          onChange={handleSelectChange}
-          style={{ marginBottom: "10px", padding: "8px", width: "200px" }}
-        >
-          <option value="">Bir seçenek seçin</option>
-          <option value="option1">Seçenek 1</option>
-          <option value="option2">Seçenek 2</option>
-          <option value="option3">Seçenek 3</option>
-        </select>
-        <label
-          id="selectedOptionLabel"
-          style={{ marginTop: "20px", fontSize: "16px", color: "blue" }}
-        >
-          {selectedOption ? `Seçilen seçenek: ${selectedOption}` : "Henüz bir seçenek seçilmedi."}
-        </label>
-      </div>
-      <div
-        style={{
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          marginTop: "50px",
-        }}
-      >
-        <h1>İmleci Üzerine Getir Testi</h1>
-        <button
-          id="hoverButton"
-          onMouseEnter={handleMouseEnter}
-          onMouseLeave={handleMouseLeave}
-          style={{ padding: "8px 16px" }}
-        >
-          İmleci Üzerime Getir
-        </button>
-        {hoverMessage && (
-          <div
-            id="hoverMessage"
-            style={{ marginTop: "20px", fontSize: "16px", color: "orange" }}
-          >
-            İmleç butonun üzerine geldi!
-          </div>
-        )}
+      <h2>Test Listesi</h2>
+      <div style={{ display: "flex", flexDirection: "column", gap: "15px" }}>
+        <button id="sayfada-olmali-test" onClick={handleClick}>Sayfada Olmalı Test</button>
+        <button id="gizlenmesini-bekle-test" onClick={handleClick}>Gizlenmesini Bekle Test</button>
+        <button id="gorunmesini-bekle-test" onClick={handleClick}>Gorunmesini Bekle Test</button>
+        <button id="check-option-test" onClick={handleClick}>Check Option Test</button>
+        <button id="acilir-kutuda-sec-test" onClick={handleClick}>Acilir Kutuda Sec Test</button>
+        <button id="imleci-uzerine-getir-test" onClick={handleClick}>Imleci Üzerine Getir Test</button>
       </div>
     </>
   );
 }
 
-export default App;
+export default function App() {
+  return (
+    <Routes>
+      <Route path="/" element={<HomePage />} />
+      <Route path="/sayfada-olmali-test" element={<SayfadaOlmaliTest />} />
+      <Route path="/gizlenmesini-bekle-test" element={<GizlenmesiniBekleTest />} />
+      <Route path="/gorunmesini-bekle-test" element={<GorunmesiniBekleTest />} />
+      <Route path="/check-option-test" element={<CheckOptionTest />} />
+      <Route path="/acilir-kutuda-sec-test" element={<AcilirKutudaSecTest />} />
+      <Route path="/imleci-uzerine-getir-test" element={<ImleciUzerineGetirTest />} />
+    </Routes>
+  );
+}
